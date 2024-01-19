@@ -1,0 +1,1 @@
+This folder contains the Python scripts used to generate data for the Star Tracker placement presentation on Jan 27th, 2024.
