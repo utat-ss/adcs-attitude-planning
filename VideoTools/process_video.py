@@ -45,6 +45,8 @@ class STKVideo:
 
 
 video = STKVideo('ex_video.mov')
-speedometer = Speedometer(0, 100, 'km/h', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
+speedometer = Speedometer(0, 100, 'DEG/SEC', 'SLEW RATE', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
+speedometer.set_yellow_zone([60, 80])
+speedometer.set_red_zone([80, 100])
 video.add_speedometer(speedometer)
 video.process("output_video.mp4")
