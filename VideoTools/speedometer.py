@@ -75,12 +75,12 @@ class Speedometer:
         rounded_value = round(value, self.decimal_accuracy)
         if self.decimal_accuracy == 0:
             rounded_value = int(rounded_value)
-        text = dwg.text(f'{rounded_value}', insert=(center[0], center[1] + 10), text_anchor='middle', font_size=33, fill=self.get_text_color(value), font_family='syncrone')
+        text = dwg.text(f'{rounded_value}', insert=(center[0], center[1]), text_anchor='middle', font_size=50, fill=self.get_text_color(value), font_family='syncrone')
         dwg.add(text)
         text = dwg.text(f'{self.unit_text}', insert=(center[0], center[1] + 40), text_anchor='middle', font_size=23, fill='grey', font_family='syncrone')
         dwg.add(text)
 
-        text = dwg.text(self.label, insert=(center[0], center[1] - 30), text_anchor='middle', font_size=23, fill='grey', font_family='syncrone')
+        text = dwg.text(self.label, insert=(center[0], center[1] - 120), text_anchor='middle', font_size=30, fill='white', font_family='syncrone')
         dwg.add(text)
 
 
