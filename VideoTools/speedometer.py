@@ -88,18 +88,18 @@ class Speedometer:
         radius = 100
         dwg = svgwrite.Drawing('temp.svg', profile='tiny', size=(4 * radius, 4 * radius))
         self.set_default_font(dwg)
-        self.add_dial_path(dwg, 100, 10, 'gray')
+        self.add_dial_path(dwg, 100, 12, 'gray')
 
         if hasattr(self, 'yellow_zone'):
-            self.add_dial_path(dwg, self.yellow_zone[1], 10, 'yellow', start_value=self.yellow_zone[0])
+            self.add_dial_path(dwg, self.yellow_zone[1], 12, 'yellow', start_value=self.yellow_zone[0])
         if hasattr(self, 'red_zone'):
-            self.add_dial_path(dwg, self.red_zone[1], 10, 'red', start_value=self.red_zone[0])
+            self.add_dial_path(dwg, self.red_zone[1], 12, 'red', start_value=self.red_zone[0])
         if hasattr(self, 'custom_zone'):
-            self.add_dial_path(dwg, self.custom_zone[1][1], 10, self.custom_zone[1][0], start_value=self.custom_zone[0][0])
+            self.add_dial_path(dwg, self.custom_zone[1][1], 12, self.custom_zone[1][0], start_value=self.custom_zone[0][0])
 
-        self.add_dial_path(dwg, value, 10)
+        self.add_dial_path(dwg, value, 12)
         self.add_dial_text(dwg, value)
         dwg.save()
-        cairosvg.svg2png(url='temp.svg', write_to=f'frame_{frame}.png')
+        cairosvg.svg2png(url='temp.svg', write_to=f'{self.label}_{frame}.png')
     
     
