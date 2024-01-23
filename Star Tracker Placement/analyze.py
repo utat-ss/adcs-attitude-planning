@@ -22,7 +22,24 @@ def attitude_knowledge_error(file_path, placement):
     """
     return []
 
-def generate_video_config(path):
+def generate_analyzed_imaging_pass(file_path, placement):
+    """
+    Generate a JSON data file.
+
+    Example JSON:
+    {
+        "start_date": "",
+        "end_date": "",
+        "slew_rates": [],
+        "attitude_knowledge_error": [],
+        "sun_angles": [],
+        "earth_angles": [],
+        "moon_angles": [],
+    }
+    """
+    pass
+
+def generate_video_config(imaging_pass_path):
     """
     Generate a video config file.
     """
