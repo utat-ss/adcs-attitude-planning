@@ -35,6 +35,34 @@ class STKVideo:
     def get_speedometer_size(self):
         return self.get_height() * self.spedometer_scale
     
+    def load_from_json(self, json_path):
+        '''
+        Example JSON:
+        {
+            "speedometers": [
+                {
+                    "min_value": 0,
+                    "max_value": 100,
+                    "unit_text": "DEG/SEC",
+                    "label": "SLEW RATE",
+                    "values": [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100],
+                    "yellow_zone": [60, 80],
+                    "red_zone": [80, 100]
+                },
+                {
+                    "min_value": 0,
+                    "max_value": 100,
+                    "unit_text": "PX",
+                    "label": "ERROR",
+                    "values": [0, 50, 60, 10, 50, 60, 80, 100, 0, 100, 100],
+                    "yellow_zone": [60, 80],
+                    "red_zone": [80, 100]
+                }
+            ]
+        }
+        '''
+        pass
+    
     def process(self, output_path):
         composite_clip = self.video_clip
         for index, speedometer in enumerate(self.speedometers):
@@ -59,17 +87,20 @@ class STKVideo:
         os.remove('temp.svg')
 
 
+
 video = STKVideo('ex_video.mov')
-slewmeter = Speedometer(0, 100, 'DEG/SEC', 'SLEW RATE', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
-slewmeter.set_yellow_zone([60, 80])
-slewmeter.set_red_zone([80, 100])
-video.add_speedometer(slewmeter)
-errormeter = Speedometer(0, 100, 'PX', 'ERROR', [0, 50, 60, 10, 50, 60, 80, 100, 0, 100, 100])
-errormeter.set_yellow_zone([60, 80])
-errormeter.set_red_zone([80, 100])
-video.add_speedometer(errormeter)
-errormeter = Speedometer(0, 100, 'DEG', 'SUN ANGLE', [0, 100, 50, 40, 30, 20, 10, 0, 0, 100, 100])
-errormeter.set_yellow_zone([60, 80])
-errormeter.set_red_zone([80, 100])
-video.add_speedometer(errormeter)
+video.load_from_json('example_config.json')
 video.process("output_video.mp4")
+# slewmeter = Speedometer(0, 100, 'DEG/SEC', 'SLEW RATE', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
+# slewmeter.set_yellow_zone([60, 80])
+# slewmeter.set_red_zone([80, 100])
+# video.add_speedometer(slewmeter)
+# errormeter = Speedometer(0, 100, 'PX', 'ERROR', [0, 50, 60, 10, 50, 60, 80, 100, 0, 100, 100])
+# errormeter.set_yellow_zone([60, 80])
+# errormeter.set_red_zone([80, 100])
+# video.add_speedometer(errormeter)
+# errormeter = Speedometer(0, 100, 'DEG', 'SUN ANGLE', [0, 100, 50, 40, 30, 20, 10, 0, 0, 100, 100])
+# errormeter.set_yellow_zone([60, 80])
+# errormeter.set_red_zone([80, 100])
+# video.add_speedometer(errormeter)
+# video.process("output_video.mp4")

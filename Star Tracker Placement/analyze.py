@@ -21,3 +21,9 @@ def attitude_knowledge_error(file_path, placement):
     Return max attitude knowledge error of all imaging passes in file.
     """
     return []
+
+def generate_video_config(path):
+    """
+    Generate a video config file.
+    """
+    pass
