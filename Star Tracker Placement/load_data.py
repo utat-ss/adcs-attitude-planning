@@ -18,9 +18,9 @@ def process_data(file_path):
             continue
 
         if block_count == 1 and line != '\n':
-            target_data.append(line)
+            target_data.append(line) # TODO: Parse the line into data
         elif block_count == 2:
-            coords.append(line)
+            coords.append(line) # TODO: Parse the line into data
 
     print(coords)
     return target_data, coords
