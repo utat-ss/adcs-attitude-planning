@@ -1,10 +1,10 @@
 import svgwrite
-import cairosvg
 from moviepy.editor import VideoFileClip, CompositeVideoClip, ImageSequenceClip
 import numpy as np
 import math
 import os
 from speedometer import Speedometer
+import json
 
 class STKVideo:
     def __init__(self, video_path):
@@ -35,7 +35,17 @@ class STKVideo:
     def get_speedometer_size(self):
         return self.get_height() * self.spedometer_scale
     
-    def load_from_json(self, json_path):
+    def load_from_json(self, json_path): 
+        #json.load stores data as a dict
+        with open(json_path, "r") as file:
+            data = json.load(file) #does the name of the json data get imported into the function thru the parameter json_path? 
+            print(data)
+        for speedometer in data["speedometers"]:
+            meter = Speedometer(speedometer["min_value"], speedometer["max_value"], speedometer["unit_text"], speedometer["label"], speedometer["values"])
+            meter.set_yellow_zone(speedometer["yellow_zone"])
+            meter.set_red_zone(speedometer["red_zone"]) 
+            self.add_speedometer(meter)
+            
         '''
         Example JSON:
         {
