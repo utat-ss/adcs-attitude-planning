@@ -1,16 +1,28 @@
 import numpy as np
 import json
+import calculate, load_data
+
 def number_good_passes(file_path, placement):
     """
     Return number of good passes in file.
     """
-    return 0
+    data = load_data.process_data(file_path)
+    counter = 0
+    for imaging_pass in data:
+        if calculate.check_imaging_pass(imaging_pass, placement):
+            counter += 1
+    return counter
 
 def all_imaging_times(file_path, placement):
     """
     Return list of all imaging times in file.
     """
-    return []
+    data = load_data.process_data(file_path)
+    times = []
+    for imaging_pass in data:
+        pass_times = [instance[0] for instance in imaging_pass]
+        times.extend(pass_times)
+    return times
 
 def slew_rates(file_path, placement):
     """
