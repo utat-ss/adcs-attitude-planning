@@ -4,7 +4,6 @@ import numpy as np
 import math
 import os
 from speedometer import Speedometer
-import cairosvg
 import json
 
 class STKVideo:
@@ -36,8 +35,16 @@ class STKVideo:
     def get_speedometer_size(self):
         return self.get_height() * self.spedometer_scale
     
-    def load_from_json(self, json_path):
-        json.load
+    def load_from_json(self, json_path): 
+        with open(json_path, "r") as file:
+            data = json.load(file)
+
+        for speedometer in data["speedometers"]:
+            meter = Speedometer(speedometer["min_value"], speedometer["max_value"], speedometer["unit_text"], speedometer["label"], speedometer["values"])
+            meter.set_yellow_zone(speedometer["yellow_zone"])
+            meter.set_red_zone(speedometer["red_zone"]) 
+            self.add_speedometer(meter)
+            
         '''
         Example JSON:
         {
