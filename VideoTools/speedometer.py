@@ -10,7 +10,17 @@ class Speedometer:
         self.unit_text = unit_text
         self.label = label
         self.values = values
-        self.decimal_accuracy = 0
+        self.auto_detect_decimal_accuracy()
+
+    def auto_detect_decimal_accuracy(self):
+        delta = self.max_value - self.min_value
+        if delta < 1:
+            self.decimal_accuracy = 2
+        elif delta < 10:
+            self.decimal_accuracy = 1
+        else:
+            self.decimal_accuracy = 0
+
 
     def get_interpolated_value(self, frame, total_frames):
         index = np.interp(frame, [0, total_frames], [0, len(self.values) - 1])
@@ -32,7 +42,6 @@ class Speedometer:
 
     def set_decimal_accuracy(self, decimal_accuracy):
         self.decimal_accuracy = decimal_accuracy
-
 
     def add_dial_path(self, dwg, value, width, color='white', radius = 100, start_value = None):
         start_pct = 40
@@ -88,7 +97,7 @@ class Speedometer:
         radius = 100
         dwg = svgwrite.Drawing('temp.svg', profile='tiny', size=(4 * radius, 4 * radius))
         self.set_default_font(dwg)
-        self.add_dial_path(dwg, 100, 12, 'gray')
+        self.add_dial_path(dwg, self.max_value, 12, 'gray')
 
         if hasattr(self, 'yellow_zone'):
             self.add_dial_path(dwg, self.yellow_zone[1], 12, 'yellow', start_value=self.yellow_zone[0])

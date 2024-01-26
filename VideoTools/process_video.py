@@ -41,37 +41,12 @@ class STKVideo:
 
         for speedometer in data["speedometers"]:
             meter = Speedometer(speedometer["min_value"], speedometer["max_value"], speedometer["unit_text"], speedometer["label"], speedometer["values"])
-            meter.set_yellow_zone(speedometer["yellow_zone"])
-            meter.set_red_zone(speedometer["red_zone"]) 
+            if "yellow_zone" in speedometer:
+                meter.set_yellow_zone(speedometer["yellow_zone"])
+            if "red_zone" in speedometer:
+                meter.set_red_zone(speedometer["red_zone"]) 
             self.add_speedometer(meter)
-            
-        '''
-        Example JSON:
-        {
-            "speedometers": [
-                {
-                    "min_value": 0,
-                    "max_value": 100,
-                    "unit_text": "DEG/SEC",
-                    "label": "SLEW RATE",
-                    "values": [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100],
-                    "yellow_zone": [60, 80],
-                    "red_zone": [80, 100]
-                },
-                {
-                    "min_value": 0,
-                    "max_value": 100,
-                    "unit_text": "PX",
-                    "label": "ERROR",
-                    "values": [0, 50, 60, 10, 50, 60, 80, 100, 0, 100, 100],
-                    "yellow_zone": [60, 80],
-                    "red_zone": [80, 100]
-                }
-            ]
-        }
-        '''
-        pass
-    
+
     def process(self, output_path):
         composite_clip = self.video_clip
         for index, speedometer in enumerate(self.speedometers):
@@ -99,7 +74,7 @@ class STKVideo:
 
 
 video = STKVideo('ex_video.mov')
-video.load_from_json('example_config.json')
+video.load_from_json('config/Y-AXIS-VALID-VIDEO.json')
 video.process("output_video.mp4")
 # slewmeter = Speedometer(0, 100, 'DEG/SEC', 'SLEW RATE', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
 # slewmeter.set_yellow_zone([60, 80])
