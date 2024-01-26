@@ -45,5 +45,21 @@ def process_data(file_path):
     """
 
     target_data, coords = parse_data(file_path)
+    tracking_periods = [x for x in target_data if x[3] == 'Target']
 
-process_data('FINCH_StarTracker_Sample.txt')
+    res = []
+    current_coords_index = 0
+    for period in tracking_periods:
+        start = period[0]
+        end = period[1]
+        imaging_pass = []
+        while current_coords_index < len(coords) and coords[current_coords_index][0] <= end:
+            if coords[current_coords_index][0] >= start:
+                imaging_pass.append(coords[current_coords_index])
+            current_coords_index += 1
+        if len(imaging_pass) > 0 and current_coords_index != len(coords) - 1:
+            res.append(imaging_pass)
+
+    return res
+
+print(process_data('FINCH_StarTracker_Sample.txt'))
