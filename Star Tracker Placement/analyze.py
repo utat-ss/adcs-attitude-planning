@@ -75,12 +75,18 @@ def generate_analyzed_imaging_passes(stk_path, output_path, placement):
     data = process_data(stk_path)
     output = []
     for imaging_pass in data:
-        output.append(generate_analyzed_imaging_pass(imaging_pass, placement))
-    
-    with open(output_path, 'w') as f:
-        json.dump(output, f)
+        analyzed_imaging_pass = generate_analyzed_imaging_pass(imaging_pass, placement)
+        if analyzed_imaging_pass["valid"]:
+            output.append(analyzed_imaging_pass)
 
-generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "output.json", (1, 0, 0))
+    with open(output_path, 'w') as f:
+        json.dump({
+            "placement": placement,
+            "data": output
+        }, f)
+
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "X-AXIS-VALID.json", (1, 0, 0))
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Y-AXIS-VALID.json", (0, 1, 0))
 
 def generate_video_config(imaging_pass_path, output_path):
     """
