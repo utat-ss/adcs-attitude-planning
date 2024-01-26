@@ -1,10 +1,11 @@
 import svgwrite
-import cairosvg
 from moviepy.editor import VideoFileClip, CompositeVideoClip, ImageSequenceClip
 import numpy as np
 import math
 import os
 from speedometer import Speedometer
+import cairosvg
+import json
 
 class STKVideo:
     def __init__(self, video_path):
@@ -36,6 +37,7 @@ class STKVideo:
         return self.get_height() * self.spedometer_scale
     
     def load_from_json(self, json_path):
+        json.load
         '''
         Example JSON:
         {
@@ -84,7 +86,8 @@ class STKVideo:
         for frame in range(self.total_frames):
             for speedometer in self.speedometers:
                 os.remove(f'{speedometer.label}_{frame}.png')
-        os.remove('temp.svg')
+        if os.path.exists('temp.svg'):
+            os.remove('temp.svg')
 
 
 

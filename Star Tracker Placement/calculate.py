@@ -81,3 +81,9 @@ def max_slew_rate(imaging_pass):
     Return max slew rate over imaging pass.
     """
     return 0
+
+def attitude_knowledge_errors(slew_rates):
+    """
+    Return attitude knowledge error over imaging pass.
+    """
+    return []
