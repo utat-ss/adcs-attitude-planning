@@ -1,3 +1,42 @@
+from datetime import datetime
+
+def parse_data(file_path):
+    with open(file_path) as f:
+        lines = f.readlines()
+
+    target_data = []
+    coords = []
+    block_count = 0
+    reading = False
+
+    for line in lines:
+        if line[0] == '-':
+            reading = True
+            block_count += 1
+            continue
+
+        if line == '\n':
+            reading = False
+            continue
+
+        if block_count == 1 and reading:
+            line = line.strip()
+            line = line.split('    ')
+            line = [x.strip() for x in line if x != '']
+            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f")
+            line[1] = datetime.strptime(line[1], "%d %b %Y %H:%M:%S.%f")
+            target_data.append(line)
+        elif block_count == 2 and reading:
+            line = line.strip()
+            line = line.split('    ')
+            line = [x.strip() for x in line if x != '']
+            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f")
+            for i in range(1, len(line)):
+                line[i] = float(line[i])
+            coords.append(line)
+
+    return target_data, coords
+
 def process_data(file_path):
     """
     Return triple array of relevant info for each imaging pass.
@@ -5,24 +44,6 @@ def process_data(file_path):
     E.g. [[[time, sun x, sun y, sun z, ...], [time, sun x, sun y, sun z, ...]], ...]
     """
 
-    with open(file_path) as f:
-        lines = f.readlines()
-
-    target_data = []
-    coords = []
-    block_count = 0
-
-    for line in lines:
-        if line[0] == '-':
-            block_count += 1
-            continue
-
-        if block_count == 1 and line != '\n':
-            target_data.append(line) # TODO: Parse the line into data
-        elif block_count == 2:
-            coords.append(line) # TODO: Parse the line into data
-
-    print(coords)
-    return target_data, coords
+    target_data, coords = parse_data(file_path)
 
 process_data('FINCH_StarTracker_Sample.txt')
