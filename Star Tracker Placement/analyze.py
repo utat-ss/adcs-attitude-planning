@@ -87,6 +87,7 @@ def generate_analyzed_imaging_passes(stk_path, output_path, placement):
 
 # generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "X-AXIS-VALID.json", (1, 0, 0))
 # generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Y-AXIS-VALID.json", (0, 1, 0))
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Z-AXIS-VALID.json", (0, 0, 1)) # Example of invalid placement
 
 def generate_video_config(imaging_pass_path, output_path):
     """

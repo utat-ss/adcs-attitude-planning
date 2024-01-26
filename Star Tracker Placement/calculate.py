@@ -72,16 +72,17 @@ def violates_sun_constraint(angle):
     return angle < 40
 
 EARTH_RADIUS = 6371.0 #km
-def violates_earth_constraint(angle, dist_to_earth=EARTH_RADIUS):
+def violates_earth_constraint(angle, dist_to_earth=500):
     """
     Return True if angle violates earth constraint.
     Check 40 deg cone intersection with 100 km atmosphere. (~110 deg)
     Source: https://www.researching.cn/articles/OJc35aead846202911
     """
     atm_width = 100.0 #km
-    sin_angle = (EARTH_RADIUS + atm_width)/dist_to_earth
+    sin_angle = (EARTH_RADIUS + atm_width)/(EARTH_RADIUS + dist_to_earth)
     sin_angle = clamp(sin_angle, -1, 1)
     earthlight_cone_angle = math.asin(sin_angle)  #δa=arcsin[(Er+d)/Es], from paper
+    earthlight_cone_angle = radians_to_degrees(earthlight_cone_angle)
     return angle < earthlight_cone_angle + 40
 
 def violates_moon_constraint(angle):
