@@ -57,15 +57,17 @@ def generate_analyzed_imaging_pass(imaging_pass, placement):
 
     slew_rates = get_slew_rates(imaging_pass)
     angles = calculate_angles_to_tracker(imaging_pass, placement)
+    start_date = imaging_pass[0][0]
+    end_date = imaging_pass[-1][0]
 
     return {
-        "start_date": imaging_pass[0][0],
-        "end_date": imaging_pass[-1][0],
+        "start_date": start_date.strftime("%Y-%m-%d %H:%M:%S"),
+        "end_date": end_date.strftime("%Y-%m-%d %H:%M:%S"),
         "slew_rates": slew_rates,
         "attitude_knowledge_error": attitude_knowledge_errors(slew_rates),
-        "sun_angles": [instance[2] for instance in angles],
-        "earth_angles": [instance[4] for instance in angles],
-        "moon_angles": [instance[3] for instance in angles],
+        "sun_angles": [instance[1] for instance in angles],
+        "moon_angles": [instance[2] for instance in angles],
+        "earth_angles": [instance[3] for instance in angles],
         "valid": check_imaging_pass(imaging_pass, placement)
     }
 
@@ -76,7 +78,9 @@ def generate_analyzed_imaging_passes(stk_path, output_path, placement):
         output.append(generate_analyzed_imaging_pass(imaging_pass, placement))
     
     with open(output_path, 'w') as f:
-        f.write(output)
+        json.dump(output, f)
+
+generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "output.json", (1, 0, 0))
 
 def generate_video_config(imaging_pass_path, output_path):
     """

@@ -61,5 +61,3 @@ def process_data(file_path):
             res.append(imaging_pass)
 
     return res
-
-print(process_data('FINCH_StarTracker_Sample.txt'))
