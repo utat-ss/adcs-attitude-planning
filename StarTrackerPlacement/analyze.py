@@ -32,7 +32,7 @@ def all_imaging_times(file_path, placement):
 
 def slew_rates(data_path):
     """
-    Return max slew rate of all imaging passes in file.
+    Return max slew rates of all imaging passes in file.
     """
 
     with open(data_path, "r") as file:
@@ -41,8 +41,11 @@ def slew_rates(data_path):
     max_slew_rates = []
     for imaging_pass in data["data"]:
         slew_rates = imaging_pass["slew_rates"]
-        max_slew_rate = np.max(slew_rates)
-        max_slew_rates.append(max_slew_rate)
+        valid_slew_rates = []
+        for index in imaging_pass["valid_indicies"]:
+            valid_slew_rates.append(slew_rates[index - 1])
+        if len(valid_slew_rates) > 0:
+            max_slew_rates.append(np.max(valid_slew_rates))
 
     return max_slew_rates
 
@@ -81,6 +84,21 @@ def longest_valid_imaging_pass(data_path):
             longest_pass_index = longest_consecutive_pass_index
     
     return len(longest_pass), longest_pass_index, longest_pass[0]
+
+def num_valid_imaging_passes(data_path):
+    """
+    Return number of valid imaging passes in file.
+    """
+
+    with open(data_path, "r") as file:
+        data = json.load(file)
+
+    valid_passes = 0
+    for imaging_pass in data["data"]:
+        if len(imaging_pass["valid_indicies"]) > 0:
+            valid_passes += 1
+
+    return valid_passes
     
 
 def get_pass_date_range(data_path, index, start_index, duration):
@@ -147,13 +165,6 @@ def generate_analyzed_imaging_passes(stk_path, output_path, placement):
             "data": output
         }, f)
 
-# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "X-AXIS-VALID.json", (-1, 0, 0))
-# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Y-AXIS-VALID.json", (0, 1, 0))
-# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Z-AXIS-VALID.json", (0, 0, 1)) # Example of invalid placement
-
-# generate_analyzed_imaging_passes("FINCH_StarTracker_Oct18-17-00_Oct23-17-00.txt", "data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", (1, 0, 0))
-# generate_analyzed_imaging_passes("FINCH_StarTracker_Oct18-17-00_Oct23-17-00.txt", "data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", (0, 1, 0))
-
 def generate_speedometer_config(label, unit_text, values, yellow_zone, red_zone):
     """
     Generate a speedometer config file.
@@ -210,10 +221,27 @@ def generate_video_config(path, imaging_pass_index, start_index = 0, duration = 
         output_path = path.split("/")[-1].split(".")[0] + "-VIDEO.json"
         generate_video_config_data(data[imaging_pass_index], output_path, start_index, duration)
 
-bestX = longest_valid_imaging_pass("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json")
-bestY = longest_valid_imaging_pass("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json")
-datesX = get_pass_date_range("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestX[1], bestX[2], bestX[0])
-datesY = get_pass_date_range("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestY[1], bestY[2], bestY[0])
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "X-AXIS-VALID.json", (1, 0, 0))
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Y-AXIS-VALID.json", (0, 1, 0))
+# generate_analyzed_imaging_passes("FINCH_StarTracker_Sample.txt", "Z-AXIS-VALID.json", (0, 0, 1)) # Example of invalid placement
 
-generate_video_config("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestX[1], bestX[2], bestX[0])
-generate_video_config("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestY[1], bestY[2], bestY[0])
+# generate_analyzed_imaging_passes("stk_data/FINCH_StarTracker_Oct18-17-00_Oct23-17-00.txt", "data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", (1, 0, 0))
+# generate_analyzed_imaging_passes("stk_data/FINCH_StarTracker_Oct18-17-00_Oct23-17-00.txt", "data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", (0, 1, 0))
+
+# bestX = longest_valid_imaging_pass("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json")
+# bestY = longest_valid_imaging_pass("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json")
+# datesX = get_pass_date_range("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestX[1], bestX[2], bestX[0])
+# datesY = get_pass_date_range("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestY[1], bestY[2], bestY[0])
+
+# print(f"Best X-Axis Pass: {bestX[0]} seconds, {datesX[0]} to {datesX[1]}")
+# print(f"Best Y-Axis Pass: {bestY[0]} seconds, {datesY[0]} to {datesY[1]}")
+
+# generate_video_config("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestX[1], bestX[2], bestX[0])
+# generate_video_config("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json", bestY[1], bestY[2], bestY[0])
+
+# print(num_valid_imaging_passes("data/X-AXIS-OCT18-17-00-OCT23-17-00-VALID.json"))
+# print(num_valid_imaging_passes("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json"))
+
+# sr = slew_rates("data/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID.json")
+# print(np.max(sr))
+# print(np.mean(sr))

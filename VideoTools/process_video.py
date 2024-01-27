@@ -73,19 +73,10 @@ class STKVideo:
 
 
 
-video = STKVideo('ex_video.mov')
-video.load_from_json('config/Y-AXIS-VALID-VIDEO.json')
-video.process("output_video.mp4")
-# slewmeter = Speedometer(0, 100, 'DEG/SEC', 'SLEW RATE', [0, 100, 0, 100, 0, 100, 0, 100, 0, 100, 100])
-# slewmeter.set_yellow_zone([60, 80])
-# slewmeter.set_red_zone([80, 100])
-# video.add_speedometer(slewmeter)
-# errormeter = Speedometer(0, 100, 'PX', 'ERROR', [0, 50, 60, 10, 50, 60, 80, 100, 0, 100, 100])
-# errormeter.set_yellow_zone([60, 80])
-# errormeter.set_red_zone([80, 100])
-# video.add_speedometer(errormeter)
-# errormeter = Speedometer(0, 100, 'DEG', 'SUN ANGLE', [0, 100, 50, 40, 30, 20, 10, 0, 0, 100, 100])
-# errormeter.set_yellow_zone([60, 80])
-# errormeter.set_red_zone([80, 100])
-# video.add_speedometer(errormeter)
-# video.process("output_video.mp4")
+# video = STKVideo('raw_videos/X-AXIS-OCT18-OCT23_2025_LONGEST_PASS.mp4')
+# video.load_from_json('config/X-AXIS-OCT18-17-00-OCT23-17-00-VALID-VIDEO.json')
+# video.process("X-AXIS-LONGEST-PASS-VIDEO.mp4")
+
+video = STKVideo('raw_videos/Y-AXIS-OCT18-OCT23_2025_LONGEST_PASS.mp4')
+video.load_from_json('config/Y-AXIS-OCT18-17-00-OCT23-17-00-VALID-VIDEO.json')
+video.process("Y-AXIS-LONGEST-PASS-VIDEO.mp4")

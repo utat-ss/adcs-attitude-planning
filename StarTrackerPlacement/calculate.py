@@ -52,7 +52,9 @@ def calculate_angles_to_tracker(imaging_pass, placement):
     """
     angles = []
     for instance in imaging_pass:
-        sunvec = instance[1:4]
+        sunvec = instance[4:7]
+        if is_in_eclipse(instance):
+            sunvec = [-placement[0], -placement[1], -placement[2]]
         moonvec = instance[7:10]
         earthvec = instance[10:13]
 
