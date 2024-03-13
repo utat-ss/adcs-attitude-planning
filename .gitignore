@@ -1,2 +1,3 @@
 VideoTools/raw_videos/*
 **/__pycache__/
+.vscode/settings.json

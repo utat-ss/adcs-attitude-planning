@@ -1,10 +1,11 @@
+from __future__ import annotations
 
 import numpy as np
 from datetime import datetime
 from Checks.check import *
 
 
-def ang_from_vecs(v1: np.array[float], v2:np.array[float]) -> float:
+def ang_from_vecs(v1: np.ndarray, v2:np.ndarray) -> float:
         """Takes two vectors v1, v2 as numpy arrays and returns the angle between them in degrees"""
         normv1, normv2 = np.linalg.norm(v1), np.linalg.norm(v2)
         ang = np.arccos(np.dot(v1,v2)/ (normv1 * normv2))
@@ -14,18 +15,17 @@ class TimeInstance:
     """
     """
 
-    #Intrinsic Properties (Direct from STK)
+    #Intrinsic Properties (From data source)
     date: datetime
 
-    earth_vec: np.array[float]
-    moon_vec: np.array[float]
-    sun_vec: np.array[float]
+    earth_vec: np.ndarray
+    moon_vec: np.ndarray
+    sun_vec: np.ndarray
     eclipsed: bool #Not intrinsic but not worth storing sunlight vector
 
     #Calculated Properties
-    #WRT placement vector, defined in function call
-    placement: np.array[float]
-    #Stored in degrees
+    #WRT placement vector, defined in function call. All in degrees
+    placement: np.ndarray
     earth_angle: float
     moon_angle: float
     sun_angle: float
@@ -41,11 +41,23 @@ class TimeInstance:
                  sun_vec: list[float], sunlight_vec: list[float]) -> None:
         self.date = date
         self.earth_vec = np.array(earth_vec)
-        self.moon_vec_vec = np.array(moon_vec)
+        self.moon_vec = np.array(moon_vec)
         self.sun_vec = np.array(sun_vec)
         self.eclipsed = sunlight_vec[0] == 0 and sunlight_vec[1] == 0 and sunlight_vec[2] == 0
         self.has_angles = False
         self.has_slew = False
+
+    @classmethod
+    def construct_STK(cls, data: list) -> TimeInstance:
+        date = data[0]
+        sun_vec = data[1:4]
+        sunlight_vec = data[4:7]
+        moon_vec = data[7:10]
+        earth_vec = data[10:]
+
+        self = TimeInstance(date, earth_vec, moon_vec, sun_vec, sunlight_vec)
+        return self
+    
 
     def calculate_angles(self,placement: list[float]) -> None:
         self.placement = np.array(placement)
@@ -61,7 +73,7 @@ class TimeInstance:
         self.has_slew = True
 
     def set_default_checks(self) -> None:
-        self.checks = [SunCheck(), MoonCheck(), EarthCheck()]
+        self.checks = [SunCheck(), MoonCheck(), EarthCheck(), EclipseCheck()]
 
 
     def is_valid(self) -> tuple[bool, str]:

@@ -53,3 +53,12 @@ class MoonCheck(Check):
 
     def check_instance(self, instance: TimeInstance) -> bool:    
         return not (instance.moon_angle < 40)
+    
+class EclipseCheck(Check):
+    """Check if instance satisfies eclipse constraint. (Must not be eclipsed)"""
+
+    def __init__(self) -> None:
+        super().__init__('Eclipse Check Failed')
+
+    def check_instance(self, instance: TimeInstance) -> bool:
+        return not instance.eclipsed
