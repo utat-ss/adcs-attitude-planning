@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from datetime import datetime
-from Checks.check import *
+import Tools.check as check
 
 
 def ang_from_vecs(v1: np.ndarray, v2:np.ndarray) -> float:
@@ -35,7 +35,7 @@ class TimeInstance:
     has_slew: bool
 
     #Validation Checks
-    checks: list[Check]
+    checks: list[check.Check]
 
     def __init__(self, date: datetime, earth_vec: list[float], moon_vec: list[float], 
                  sun_vec: list[float], sunlight_vec: list[float]) -> None:
@@ -73,7 +73,7 @@ class TimeInstance:
         self.has_slew = True
 
     def set_default_checks(self) -> None:
-        self.checks = [SunCheck(), MoonCheck(), EarthCheck(), EclipseCheck()]
+        self.checks = [check.SunCheck(), check.MoonCheck(), check.EarthCheck(), check.EclipseCheck()]
 
 
     def is_valid(self) -> tuple[bool, str]:
