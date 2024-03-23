@@ -23,16 +23,16 @@ def parse_data(file_path):
             line = line.strip()
             line = line.split('    ')
             line = [x.strip() for x in line if x != '']
-            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f")
-            line[1] = datetime.strptime(line[1], "%d %b %Y %H:%M:%S.%f")
+            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f") # type: ignore
+            line[1] = datetime.strptime(line[1], "%d %b %Y %H:%M:%S.%f") # type: ignore
             target_data.append(line)
         elif block_count == 2 and reading:
             line = line.strip()
             line = line.split('    ')
             line = [x.strip() for x in line if x != '']
-            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f")
+            line[0] = datetime.strptime(line[0], "%d %b %Y %H:%M:%S.%f") # type: ignore
             for i in range(1, len(line)):
-                line[i] = float(line[i])
+                line[i] = float(line[i]) # type: ignore
             coords.append(line)
 
     return target_data, coords
