@@ -20,7 +20,7 @@ class SunCheck(Check):
         super().__init__('Sun Light Cone Check Failed.')
 
     def check_instance(self, instance: time.TimeInstance) -> bool:    
-        return not (instance.sun_angle < 40)
+        return not (instance.sun_angle < 40) or instance.sun_angle == 0
 
 
 class EarthCheck(Check):
@@ -43,7 +43,7 @@ class EarthCheck(Check):
         sin_angle = max(min(sin_angle, 1), -1)
         earthlight_cone_angle = np.arcsin(sin_angle)  #δa=arcsin[(Er+d)/Es], from paper
         earthlight_cone_angle = np.rad2deg(earthlight_cone_angle)
-        return not (instance.earth_angle < earthlight_cone_angle + 40)
+        return not (instance.earth_angle < earthlight_cone_angle + 40) or instance.earth_angle == 0
 
 
 class MoonCheck(Check):
@@ -53,7 +53,7 @@ class MoonCheck(Check):
         super().__init__('Moon Light Cone Check Failed.')
 
     def check_instance(self, instance: time.TimeInstance) -> bool:    
-        return not (instance.moon_angle < 40)
+        return not (instance.moon_angle < 40) or instance.moon_angle == 0
     
 class EclipseCheck(Check):
     """Check if instance satisfies eclipse constraint. (Must not be eclipsed)"""

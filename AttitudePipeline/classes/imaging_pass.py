@@ -13,7 +13,7 @@ class ImagingPass:
     instances: list[TimeInstance]
     time_range: tuple[datetime, datetime]
     
-    placement: list[float]
+    placement: tuple[float, float, float]
 
     #Constructor Methods
     def __init__(self, instances: list[TimeInstance]) -> None:
@@ -32,8 +32,7 @@ class ImagingPass:
         img_pass = ImagingPass(instances)
         return img_pass
 
-
-    def apply_placement(self, placement: list[float], final_slew: float = 0):
+    def apply_placement(self, placement: tuple[float,float,float], final_slew: float = 0) -> None:
         """ Given @placement of the star tracker, applies it to each TimeInstance in the pass. For each calculates the 
         relevant angles as well as the slew rates for each TimeInstance. Note: Slew rate of final instance is 0 unless specified. 
         """
@@ -43,6 +42,18 @@ class ImagingPass:
             self.instances[i].calculate_slew_rate(self.instances[i+1])
         self.instances[-1].calculate_angles(placement)
         self.instances[-1].slew_rate = final_slew
+
+    def apply_checks(self, checks: list|None = None) -> None:
+        """ Given an optional list of Check objects, applys all instances in the pass with those checks.
+            By default, applies the standard checks: Sun, Moon, Earth, Eclipse"""
+        if checks is None:
+            for instance in self.instances:
+                instance.set_default_checks()
+            return
+        
+        for instance in self.instances:
+            instance.checks = checks
+
 
     def find_valid_indicies(self) -> list[int]:
         """Returns list of indices for self.instances of valid instances""" 
@@ -62,14 +73,14 @@ class ImagingPass:
             
         return instances
     
-    def fragment_to_valid(self) -> tuple[list[ImagingPass], list[tuple[int,int]]]:
+    def fragment_to_valid(self) -> tuple[list[ImagingPass], list[tuple[int,int]]] | tuple[None,None]:
         """Returns a list of new Imaging passes, each of which has all consecutive valid indicies.
          Each returned imaging pass' instances are a subset of self.instances.
          Also returns the start and ending indicies of each fragment w.r.t self.instances, ex. [(3,23), (25, 56), ...]
-         If no instances in self are valid, return empty lists."""
+         If no instances in self are valid, return None."""
         valid_indicies = self.find_valid_indicies()
         if len(valid_indicies) == 0:
-            return [], []
+            return None, None
         
         # Collect valid indicies into continuous stretches
         pass_indices: list[list[int]] = []

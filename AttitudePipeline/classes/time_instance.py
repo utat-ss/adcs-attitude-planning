@@ -8,6 +8,8 @@ import tools.check as check
 def ang_from_vecs(v1: np.ndarray, v2:np.ndarray) -> float:
         """Takes two vectors v1, v2 as numpy arrays and returns the angle between them in degrees"""
         normv1, normv2 = np.linalg.norm(v1), np.linalg.norm(v2)
+        if normv1 == 0 or normv2 == 0:
+            return 0
         ang = np.arccos(np.dot(v1,v2)/ (normv1 * normv2))
         return np.rad2deg(ang)
 
@@ -59,7 +61,7 @@ class TimeInstance:
         return self
     
 
-    def calculate_angles(self,placement: list[float]) -> None:
+    def calculate_angles(self,placement: tuple[float, float, float]) -> None:
         self.placement = np.array(placement)
         self.earth_angle = ang_from_vecs(self.earth_vec, self.placement)
         self.moon_angle = ang_from_vecs(self.moon_vec, self.placement)
