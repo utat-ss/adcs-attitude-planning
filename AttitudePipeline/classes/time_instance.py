@@ -27,6 +27,7 @@ class TimeInstance:
 
     #Calculated Properties
     #WRT placement vector, defined in function call. All in degrees
+    #If vector to object is 0 (not in view usually), then angle is also 0
     placement: np.ndarray
     earth_angle: float
     moon_angle: float

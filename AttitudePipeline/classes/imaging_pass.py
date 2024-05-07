@@ -14,11 +14,13 @@ class ImagingPass:
     time_range: tuple[datetime, datetime]
     
     placement: tuple[float, float, float]
+    checks: list | None
 
     #Constructor Methods
     def __init__(self, instances: list[TimeInstance]) -> None:
         self.instances = instances
         self.time_range = (instances[0].date, instances[-1].date)
+        self.checks = None
 
 
     @classmethod
@@ -51,6 +53,7 @@ class ImagingPass:
                 instance.set_default_checks()
             return
         
+        self.checks = checks
         for instance in self.instances:
             instance.checks = checks
 
@@ -59,7 +62,7 @@ class ImagingPass:
         """Returns list of indices for self.instances of valid instances""" 
         indicies = []
         for i in range(len(self.instances)):
-            if self.instances[i].is_valid():
+            if self.instances[i].is_valid()[0]:
                 indicies.append(i)
 
         return indicies
@@ -77,7 +80,8 @@ class ImagingPass:
         """Returns a list of new Imaging passes, each of which has all consecutive valid indicies.
          Each returned imaging pass' instances are a subset of self.instances.
          Also returns the start and ending indicies of each fragment w.r.t self.instances, ex. [(3,23), (25, 56), ...]
-         If no instances in self are valid, return None."""
+         If no instances in self are valid, return (None, None)."""
+        
         valid_indicies = self.find_valid_indicies()
         if len(valid_indicies) == 0:
             return None, None
@@ -89,15 +93,19 @@ class ImagingPass:
         for index in valid_indicies[1:]:
             if curr_indicies[-1] == index - 1:
                 curr_indicies.append(index)
+                if index == valid_indicies[-1]:
+                    pass_indices.append(curr_indicies)
             else:
                 pass_indices.append(curr_indicies)
                 curr_indicies = [index]
 
+
         # Turn indicies into ImagingPass objects
         passes = []
         for fragment in pass_indices:
-            pass_obj = ImagingPass(self.instances[fragment[0]:fragment[-1]])
+            pass_obj = ImagingPass(self.instances[fragment[0]:fragment[-1]+1])
             pass_obj.apply_placement(self.placement, self.instances[fragment[-1]].slew_rate)
+            pass_obj.apply_checks(self.checks)
             passes.append(pass_obj)
 
         # Extract just the start and end indicies
@@ -105,6 +113,8 @@ class ImagingPass:
 
         return passes, indicies
     
+
+
 
 """
     input 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from docutils import DataError
-
 from classes.imaging_pass import ImagingPass
 from classes.time_instance import TimeInstance
 
@@ -55,6 +53,9 @@ class OrbitPath:
                 new_passes.extend(fragments)
 
         self.img_passes = new_passes
+        self.instances = []
+        for img_pass in new_passes:
+            self.instances.extend(img_pass.instances)
 
     def get_num_partValid_passes(self) -> int:
         """ Return the number of imaging passes in the path that has at least one valid instance"""
@@ -85,6 +86,7 @@ class OrbitPath:
             if fragments is None or fragment_endpoints is None:
                 continue
             longest_fragment = fragments[0]
+            longest_fragment_endpoints = fragment_endpoints[0]
             for fragment, endpoints in zip(fragments, fragment_endpoints):
                 if len(fragment.instances) > len(longest_fragment.instances):
                     longest_fragment = fragment
