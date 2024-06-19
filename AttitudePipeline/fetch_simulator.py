@@ -20,7 +20,7 @@ def create_sim(name, tle_1, tle_2, span_min):
         },
         "orbit": {"content": [tle_1, tle_2]},
         "simulation option": {
-            "maneuver": "2", # 1: Detumbling (AD), 2: Sun pointing, 3: Nadir, 4: Target (AD), 5: Fine (AD); AD -> Additional Data required to use mode
+            "maneuver": "3", # 1: Detumbling (AD), 2: Sun pointing, 3: Nadir, 4: Target (AD), 5: Fine (AD); AD -> Additional Data required to use mode
             "span": span_min, # minutes to run sim
             "step size": 1,
             "alignment axis": "6", # 1: +X, 2: -X, 3: +Y, 4: -Y, 5: +Z, 6: -Z
@@ -99,11 +99,11 @@ def get_all_orbit_points(tle_1, tle_2, sim_data):
         })
     return new_data
 
-tle_1 = "1 47456U 21006AV  22146.88271797  .00014504  00000+0  76123-3 0  9993"
-tle_2 = "2 47456  97.4467 206.6372 0010078   0.1840 359.9395 15.15793776 74006"
+tle_1 = "1 47456U 21006AV  22146.88271796  .00014504  00000+0  76123-3 0  9993"
+tle_2 = "2 47456  97.4467 206.6372 0010079   0.1840 359.9395 15.15793776 74006"
 
 ### General procedure for running a simulation
-sid = create_sim("test", tle_1, tle_2, 2)
+sid = create_sim("test", tle_1, tle_2, 5)
 print(sid)
 wait_until_done(sid)
 res = get_result(sid)
