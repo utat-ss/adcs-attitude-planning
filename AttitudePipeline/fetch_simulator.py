@@ -56,8 +56,6 @@ def extract_data(response_text, name):
     response_text = response_text[response_text.find("'") + 1:]
     response_text = response_text[:response_text.find("'")]
 
-    print(response_text)
-
     return json.loads(response_text)
 
 def get_result(session):
@@ -72,9 +70,44 @@ def get_result(session):
 
     return res
 
+from sgp4.api import Satrec, jday
+import numpy as np
+
+def date_str_to_jd(date_str):
+    year = int(date_str[:4])
+    month = int(date_str[5:7])
+    day = int(date_str[8:10])
+    hour = int(date_str[11:13])
+    minute = int(date_str[14:16])
+    second = int(date_str[17:19])
+    return jday(year, month, day, hour, minute, second)
+
+def tle_to_orbit(tle_1, tle_2, jd, fr):
+    satellite = Satrec.twoline2rv(tle_1, tle_2)
+    return satellite.sgp4_array(np.array([jd]), np.array([fr]))
+
+def get_all_orbit_points(tle_1, tle_2, sim_data):
+    new_data = []
+    for data in sim_data["omegaData"]:
+        jd, fr = date_str_to_jd(data["date"])
+        e, r, v = tle_to_orbit(tle_1, tle_2, jd, fr)
+        new_data.append({
+            "date": data["date"],
+            "e": e.tolist(),
+            "r": r.tolist()[0],
+            "v": v.tolist()[0]
+        })
+    return new_data
+
 tle_1 = "1 47456U 21006AV  22146.88271797  .00014504  00000+0  76123-3 0  9993"
 tle_2 = "2 47456  97.4467 206.6372 0010078   0.1840 359.9395 15.15793776 74006"
+
+### General procedure for running a simulation
 sid = create_sim("test", tle_1, tle_2, 2)
 print(sid)
 wait_until_done(sid)
-get_result(sid)
+res = get_result(sid)
+res["orbit"] = get_all_orbit_points(tle_1, tle_2, res)
+
+with open("sim_data.json", "w") as f:
+    json.dump(res, f, indent=4)
