@@ -76,7 +76,7 @@ class SimulatonConfig:
             "simulation option": {
                 "maneuver": self.maneuver.value,
                 "span": self.sim_time_min,
-                "step size": 1,
+                "step size": self.step_size,
                 "alignment axis": self.alignment_axis.value,
                 "initial omega": self.initial_omega,
                 "fine cmd": self.fine_cmd

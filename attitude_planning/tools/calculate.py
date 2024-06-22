@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import geopy.distance
 from .convert import ecef2lla, quat2euler
 
 def apply_quat(q, v):
@@ -39,6 +40,9 @@ def quaternion_multiply(quaternion1, quaternion2):
     y = w1 * y2 + y1 * w2 + z1 * x2 - x1 * z2
     z = w1 * z2 + z1 * w2 + x1 * y2 - y1 * x2
     return [w, x, y, z]
+
+def dist_between_lat_lon(lat1, lon1, lat2, lon2):
+    return geopy.distance.distance((lat1, lon1), (lat2, lon2)).m
 
 def georef(v, q):
     """
