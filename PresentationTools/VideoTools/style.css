@@ -1,9 +1,0 @@
-@font-face {
-    font-family: 'syncrone';
-    src: url('Syncrone.ttf');
-}
-
-text {
-    opacity: 0;
-    font-family: 'syncrone';
-}

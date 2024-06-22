@@ -1,9 +1,0 @@
-{
-    "start_date": "Nov 1 2018 00:00:00",
-    "end_date": "Nov 1 2018 23:59:59",
-    "slew_rates": [0.1, 0.2, 0.3, 0.4, 0.5],
-    "attitude_knowledge_error": [0.4, 0.5, 0.6, 0.7, 0.8],
-    "sun_angles": [80, 75, 70, 65, 60],
-    "earth_angles": [80, 75, 70, 65, 60],
-    "moon_angles": [80, 75, 70, 65, 60]
-}
