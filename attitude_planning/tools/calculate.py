@@ -26,6 +26,9 @@ def normalize(v):
 def mag(v):
     return math.sqrt(sum([x**2 for x in v]))
 
+def vec_diff(v1, v2):
+    return [v1[i] - v2[i] for i in range(3)]
+
 def ang_between_vecs(v1: np.ndarray, v2:np.ndarray) -> float:
     """Takes two vectors v1, v2 as numpy arrays and returns the angle between them in degrees"""
     normv1, normv2 = np.linalg.norm(v1), np.linalg.norm(v2)
@@ -56,3 +59,33 @@ def georef(v, q):
         if lla[2] < 1:
             return [*lla, quat2euler(q)[2]]
         t += max(lla[2] - 1, 0.1)
+
+# Not yet tested
+#
+# def interpolate_vectors(v1, v2, steps):
+#     return [[v1[i] + (v2[i] - v1[i]) * t for i in range(3)] for t in np.linspace(0, 1, steps)]
+
+# def interpolate_orbit(orbit, substeps):
+#     return [interpolate_vectors(orbit[i], orbit[i+1], substeps) for i in range(len(orbit) - 1)]
+
+def add_dist_to_lat_lon(lat, lon, dist, bearing):
+    pt = geopy.distance.distance(meters=dist).destination((lat, lon), bearing)
+    return (pt.latitude, pt.longitude)
+
+def make_scanline(center_lat, center_long, rotation, width_meters, height_meters):
+    """
+    Return the four corners of a rectangle in lat, long coordinates.
+    """
+
+    half_width = width_meters / 2
+    half_height = height_meters / 2
+    diag_dist = math.sqrt(half_width**2 + half_height**2)
+    angle = math.atan(half_height / half_width)
+    angle = math.degrees(angle)
+    
+    return [
+        add_dist_to_lat_lon(center_lat, center_long, diag_dist, rotation + 90 - angle),
+        add_dist_to_lat_lon(center_lat, center_long, diag_dist, rotation + 90 + angle),
+        add_dist_to_lat_lon(center_lat, center_long, diag_dist, rotation - 90 - angle),
+        add_dist_to_lat_lon(center_lat, center_long, diag_dist, rotation - 90 + angle)
+    ]

@@ -34,7 +34,7 @@ class SimulatonConfig:
     tle_2: str = "2 47456  97.4467 206.6372 0010079   0.1840 359.9395 15.15793776 74006"
     maneuver: Maneuver
     sim_time_min: int
-    step_size: int = 1
+    step_size: float = 0.01
     alignment_axis: AlignmentAxis
     initial_omega: int = 0
     fine_cmd: list[str] = ["","","",""]
@@ -180,6 +180,11 @@ class TensorTechSimulation:
         self.__get_result()
         self.__get_all_orbit_points(self.simulation_config.tle_1, self.simulation_config.tle_2)
 
+    def run_session_id(self, session_id):
+        self.session = session_id
+        self.__get_result()
+        self.__get_all_orbit_points(self.simulation_config.tle_1, self.simulation_config.tle_2)
+
     @classmethod
     def from_file(self, filename):
         with open(filename, "r") as f:
@@ -214,3 +219,8 @@ class TensorTechSimulation:
 
         with open(filename, "w") as f:
             json.dump(data, f, indent=4)
+
+if __name__ == "__main__":
+    sim = TensorTechSimulation(SimulatonConfig("Test", Maneuver.NADIR, 10, AlignmentAxis.POS_X))
+    sim.run_session_id("177735af-016a-4839-b90d-bd6a9cd8d619")
+    # sim.save("idr.json")

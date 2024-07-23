@@ -4,8 +4,8 @@ from ..tools.calculate import dist_between_lat_lon
 from ..classes.simulation import Simulation
 
 class Quantity(Enum):
-    SCANLINE_ROTATION = "scanline_rotation"
-    SCANLINE_INTERVAL = "scanline_interval"
+    SCANLINE_ROTATION = "Scanline Rotation (degrees)"
+    SCANLINE_INTERVAL = "Point Interval (m)"
 
 def get_quantity(sim: Simulation, quantity: Quantity):
     values = []
@@ -28,16 +28,21 @@ def get_quantity(sim: Simulation, quantity: Quantity):
 
 def plot_quantity(sim: Simulation, quantity: Quantity):
     values = get_quantity(sim, quantity)
-    print(values)
     dates = [x[0] for x in values]
     values = [x[1] for x in values]
+    # cut first 100 values
+    dates = dates[200:]
+    values = values[200:]
     plt.plot(dates, values)
+    plt.xlabel("Date")
+    plt.ylabel(quantity.value)
+    plt.title(f"{quantity.value} vs Date")
     plt.show()
 
 
 if __name__ == "__main__":
     from attitude_planning.tools.simulator import TensorTechSimulation, SimulatonConfig, Maneuver, AlignmentAxis
-    sim = TensorTechSimulation.from_file("fixed_attitude_june_2024.json")
+    sim = TensorTechSimulation.from_file("analysis/idr.json")
     simulation = Simulation.from_tensor_tech_sim(sim)
     simulation.derive_data()
     # plot_quantity(simulation, Quantity.SCANLINE_ROTATION)
