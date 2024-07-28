@@ -12,7 +12,6 @@ def get_date_and_latlong(sim: Simulation):
 
 def animate_sim_lla(sim: Simulation):
     data = get_date_and_latlong(sim)
-    print(data)
 
 def make_folium_rect(corners: list, opacity=1):
     return folium.Polygon(
@@ -25,14 +24,34 @@ def make_folium_rect(corners: list, opacity=1):
         opacity=opacity
     )
 
-def add_scanline_to_map(m, lat, lon, rot, width, height, integration_distance=0):
-    corners = make_scanline(lat, lon, rot, width, height)
-    int_time_corners = make_scanline(lat, lon, rot, width, height + integration_distance) # TODO: Rotation currently wrt lat/long not orbit
+def add_scanline_to_map(m, lat, lon, next_lat, next_long, rot, width, height, integration_distance=0):
+    corners = make_scanline(lat, lon,  next_lat, next_long, rot, width, height)
+    int_time_corners = make_scanline(lat, lon, next_lat, next_long, rot, width, height + integration_distance) # TODO: Rotation currently wrt lat/long not orbit
     rect = make_folium_rect(corners)
     int_rect = make_folium_rect(int_time_corners, opacity=0.5)
     m.add_child(rect)
     m.add_child(int_rect)
     return m
+
+def plot_scanlines(simulation: Simulation, start_index=0, end_index=2000):
+    data = get_date_and_latlong(simulation)
+    data = data[start_index:end_index]
+
+    m = folium.Map(location=[data.iloc[0]["lat"], data.iloc[0]["lon"]], zoom_start=6, tiles='https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr='Google Satellite')
+    for i in range(len(data) - 1):
+        lat = data.iloc[i]["lat"]
+        lon = data.iloc[i]["lon"]
+        next_lat = data.iloc[i+1]["lat"]
+        next_long = data.iloc[i+1]["lon"]
+        rot = data.iloc[i]["roll"]
+        int_dist = simulation.integration_time_s * simulation.orbit_speed[i]
+        m = add_scanline_to_map(m, lat, lon, next_lat, next_long, rot, simulation.scanline_width_m, simulation.scanline_height_m, int_dist)
+    
+    # Display the map
+    m.save("map.html")
+    import webbrowser
+    import os
+    webbrowser.open_new_tab("file://" + os.path.join(os.getcwd(), "map.html"))
 
 if __name__ == "__main__":
     from attitude_planning.tools.simulator import TensorTechSimulation
@@ -40,14 +59,17 @@ if __name__ == "__main__":
     simulation = Simulation.from_tensor_tech_sim(sim)
     simulation.derive_data()
     data = get_date_and_latlong(simulation)
+    data = data[20000:22000]
 
     m = folium.Map(location=[data.iloc[0]["lat"], data.iloc[0]["lon"]], zoom_start=6, tiles='https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', attr='Google Satellite')
-    for i in range(len(data)):
+    for i in range(len(data) - 1):
         lat = data.iloc[i]["lat"]
         lon = data.iloc[i]["lon"]
+        next_lat = data.iloc[i+1]["lat"]
+        next_long = data.iloc[i+1]["lon"]
         rot = data.iloc[i]["roll"]
         int_dist = simulation.integration_time_s * simulation.orbit_speed[i]
-        m = add_scanline_to_map(m, lat, lon, rot, simulation.scanline_width_m, simulation.scanline_height_m, int_dist)
+        m = add_scanline_to_map(m, lat, lon, next_lat, next_long, rot, simulation.scanline_width_m, simulation.scanline_height_m, int_dist)
     
     # Display the map
     m.save("map.html")

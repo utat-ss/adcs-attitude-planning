@@ -2,6 +2,9 @@ import math
 import numpy as np
 import geopy.distance
 from .convert import ecef2lla, quat2euler
+from scipy.spatial.transform import Rotation as R
+from scipy.spatial.transform import Slerp
+import datetime
 
 def apply_quat(q, v):
     '''
@@ -60,19 +63,48 @@ def georef(v, q):
             return [*lla, quat2euler(q)[2]]
         t += max(lla[2] - 1, 0.1)
 
-# Not yet tested
-#
-# def interpolate_vectors(v1, v2, steps):
-#     return [[v1[i] + (v2[i] - v1[i]) * t for i in range(3)] for t in np.linspace(0, 1, steps)]
+def interpolate_vectors(v1, v2, steps):
+    return [[v1[i] + (v2[i] - v1[i]) * t for i in range(3)] for t in np.linspace(0, 1, steps)]
 
-# def interpolate_orbit(orbit, substeps):
-#     return [interpolate_vectors(orbit[i], orbit[i+1], substeps) for i in range(len(orbit) - 1)]
+def interpolate_orbit(orbit, substeps):
+    res = [interpolate_vectors(orbit[i], orbit[i+1], substeps) for i in range(len(orbit) - 1)]
+    return [item for sublist in res for item in sublist]
+
+def quat_pow(q, n):
+    angle = 2 * math.acos(q[0])
+    new_angle = angle * n
+    return [math.cos(new_angle / 2)] + [q[i] * math.sin(new_angle / 2) for i in range(1, 4)]
+
+def interpolate_quaternions(q1, q2, steps):
+    quats = np.array([q1, q2])
+    r = R.from_quat(quats)
+    slerp = Slerp([0, 1], r)
+    return [list(slerp(t).as_quat()) for t in np.linspace(0, 1, steps)]
+
+def interpolate_attitude(attitude, steps):
+    res = [interpolate_quaternions(attitude[i], attitude[i+1], steps) for i in range(len(attitude) - 1)]
+    return [item for sublist in res for item in sublist]
+
+def interpolate_dates(dates, steps):
+    res = [[dates[i] + datetime.timedelta(seconds=t) for t in np.linspace(0, (dates[i+1] - dates[i]).total_seconds(), steps)] for i in range(len(dates) - 1)]
+    return [item for sublist in res for item in sublist]
+    
+def bearing(lat1, lon1, lat2, lon2):
+    """
+    Calculate the bearing between two lat, long points.
+    """
+    dLon = lon2 - lon1
+    y = math.sin(dLon) * math.cos(lat2)
+    x = math.cos(lat1)*math.sin(lat2) - math.sin(lat1)*math.cos(lat2)*math.cos(dLon)
+    brng = np.rad2deg(math.atan2(y, x))
+    if brng < 0: brng+= 360
+    return brng
 
 def add_dist_to_lat_lon(lat, lon, dist, bearing):
     pt = geopy.distance.distance(meters=dist).destination((lat, lon), bearing)
     return (pt.latitude, pt.longitude)
 
-def make_scanline(center_lat, center_long, rotation, width_meters, height_meters):
+def make_scanline(center_lat, center_long, next_lat, next_long, rotation, width_meters, height_meters):
     """
     Return the four corners of a rectangle in lat, long coordinates.
     """
