@@ -9,6 +9,7 @@ class Simulation:
     orbit_velocities: list
     orbit_speed: list
     dates: list # UTC
+    sun_vector: list # ECEF
     star_tracker = [1, 0, 0]
     scanline_width_m = 20000
     scanline_height_m = 100
@@ -39,10 +40,15 @@ class Simulation:
         self.orbit_velocities.append(self.orbit_velocities[-1])
         self.orbit_speed = [mag(v)/self.timestep_s() for v in self.orbit_velocities]
 
+    def calculate_sun_vector(self):
+        # Use dates to find sun vector
+        self.sun_vector = []
+
     def derive_data(self):
         self.interpolate()
         self.llar = [georef(self.orbit[i], self.attitude[i]) for i in range(len(self.orbit))]
         self.calculate_velocities()
+        self.calculate_sun_vector()
 
     @classmethod
     def from_tensor_tech_sim(cls, sim: TensorTechSimulation):
