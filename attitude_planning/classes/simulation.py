@@ -11,6 +11,9 @@ class Simulation:
     dates: list # UTC
     sun_vector: list # ECEF
     star_tracker = [1, 0, 0]
+    imaging_site_location = [0, 0] # Lat, Lon
+    imaging_attitude: list # Quaternions or None
+    is_site_visible: list # Boolean
     scanline_width_m = 20000
     scanline_height_m = 100
     integration_time_s = 1/60
@@ -44,11 +47,17 @@ class Simulation:
         # Use dates to find sun vector
         self.sun_vector = []
 
+    def calculate_imaging_attitude(self):
+        # From the orbit (self.orbit) and imaging site (self.imaging_site_location), calculate the imaging attitude. Also check whether the site is visible (we don't look through the earth)
+        self.imaging_attitude = []
+        self.is_site_visible = []
+
     def derive_data(self):
         self.interpolate()
         self.llar = [georef(self.orbit[i], self.attitude[i]) for i in range(len(self.orbit))]
         self.calculate_velocities()
         self.calculate_sun_vector()
+        self.calculate_imaging_attitude()
 
     @classmethod
     def from_tensor_tech_sim(cls, sim: TensorTechSimulation):
