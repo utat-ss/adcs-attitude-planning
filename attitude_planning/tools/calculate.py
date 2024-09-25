@@ -62,6 +62,27 @@ def georef(v, q):
         if lla[2] < 1:
             return [*lla, quat2euler(q)[2]]
         t += max(lla[2] - 1, 0.1)
+        
+def georef_ana(v, q):
+    R = 6378137
+    d = apply_quat(q, normalize([-x for x in v]))
+    
+    a = np.dot(d, d)
+    b = 2 * np.dot(v, d)
+    c = np.dot(v, v) - R**2
+
+    disc = b**2 - 4*a*c
+    if disc < 0:
+        return None
+    elif disc == 0:
+        t = (-b)/(2*a)
+    else:
+        t1 = (-b - np.sqrt(disc)) / (2*a)
+        t2 = (-b + np.sqrt(disc)) / (2*a)
+        t = min(t1, t2) if min(t1, t2) >= 0 else max(t1, t2)
+    intersection_lla = ecef2lla(*[v[i] + t*d[i] for i in range(3)])
+    return [*intersection_lla, quat2euler(q)[2]]
+
 
 def interpolate_vectors(v1, v2, steps):
     return [[v1[i] + (v2[i] - v1[i]) * t for i in range(3)] for t in np.linspace(0, 1, steps)]
