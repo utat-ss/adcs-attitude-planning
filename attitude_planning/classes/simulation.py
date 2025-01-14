@@ -3,6 +3,7 @@ from ..tools.convert import mrp2quat
 from ..tools.calculate import georef, vec_diff, mag, interpolate_orbit, interpolate_attitude, interpolate_dates
 from datetime import datetime
 
+
 class Simulation:
     attitude: list # Quaternions
     orbit: list # ECEF
@@ -21,6 +22,7 @@ class Simulation:
 
     # Derived Quantities
     llar: list # Lat, Lon, Alt, Roll
+
 
     def __init__(self, attitude, orbit, dates):
         self.attitude = attitude
@@ -58,6 +60,33 @@ class Simulation:
         self.calculate_velocities()
         self.calculate_sun_vector()
         self.calculate_imaging_attitude()
+
+    def export_quaternions(self,filename: str, BlockingFactor = 20, coordinate_axes = "ICRF"):
+        with open(f"{filename}.a","w") as f:
+            #Header information
+            f.write("stk.v.12.0\n")
+            f.write("# WrittenBy    Custom_Simulation\n\n")
+            f.write("BEGIN Attitude\n\n")
+
+            #Metadata
+            f.write(f"    NumberOfAttitudePoints\t {len(self.attitude)}\n")
+            f.write(f"    BlockingFactor\t {BlockingFactor}\n")
+            f.write(f"    CentralBody\t Earth\n")
+            f.write(f"    ScenarioEpoch\t {self.dates[0].strftime('%d %b %Y %H:%M:%S.%f')}\n")
+            
+            # Coordinate system
+            f.write(f"    CoordinateAxes\t {coordinate_axes}\n\n")
+
+            # Attitude data
+            f.write("AttitudeTimeQuaternions\t\n")
+            timestep = (self.dates[1] - self.dates[0]).total_seconds() if len(self.dates) > 1 else 0
+
+            # This is assuming the attitude data is in scalar last format
+            for i, quat in enumerate(self.attitude):
+                q1, q2, q3, qs = quat
+                f.write(f" {i*timestep}\t{q1}\t{q2}\t{q3}\t{qs}\n")
+
+            f.write("END Attitude\n")
 
     @classmethod
     def from_tensor_tech_sim(cls, sim: TensorTechSimulation):
